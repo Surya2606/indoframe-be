@@ -49,6 +49,8 @@ class ArticleRepository {
           category_id: categoryId,
           created_at: payload.createdAt || new Date().toISOString(),
           status: "published",
+          thumbnail: imageUrl,
+          image_url: imageUrl,
         },
       ])
       .select();
