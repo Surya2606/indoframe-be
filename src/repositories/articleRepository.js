@@ -1,35 +1,39 @@
 const supabase = require("../config/supabase");
 
-// Helper sederhana untuk generate Slug otomatis
+// Helper untuk buat Slug otomatis
 const createSlug = (title) => {
   return (
     title
       .toLowerCase()
       .trim()
-      .replace(/[^\w\s-]/g, "") // Hapus karakter khusus
-      .replace(/[\s_-]+/g, "-") // Ganti spasi dengan strip
+      .replace(/[^\w\s-]/g, "")
+      .replace(/[\s_-]+/g, "-")
       .replace(/^-+|-+$/g, "") +
     "-" +
     Date.now()
-  ); // Tambah timestamp agar slug selalu UNIQUE
+  );
 };
 
 class ArticleRepository {
-  // Ambil semua artikel untuk Beranda / Header
+  // 1. DIBERSIHKAN: Hapus 'categories(name)' agar tidak HTTP 500
   async findAll() {
-    // Ambil data artikel tanpa join otomatis yang berpotensi error 500
     const { data, error } = await supabase.from("articles").select("*").order("created_at", { ascending: false });
 
     if (error) throw error;
-
     return data;
-  } // ... method findAll dan searchFullText tetapkan seperti sebelumnya ...
+  }
 
+  // 2. Search FTS
+  async searchFullText(query) {
+    const { data, error } = await supabase.from("articles").select("*").or(`title.fts.${query},content.fts.${query}`).order("created_at", { ascending: false });
+
+    if (error) throw error;
+    return data;
+  }
+
+  // 3. Insert artikel sesuai skema Supabase
   async create(payload) {
-    // Generate slug otomatis dari title
     const generatedSlug = createSlug(payload.title);
-
-    // Mencegah error NaN jika payload channel/category kosong
     const categoryId = payload.channelId ? parseInt(payload.channelId, 10) : null;
 
     const { data, error } = await supabase
@@ -37,14 +41,14 @@ class ArticleRepository {
       .insert([
         {
           title: payload.title,
-          slug: generatedSlug, // WAJIB ADA (NON-NULLABLE & UNIQUE)
+          slug: generatedSlug,
           content: payload.content || payload.contentHtml,
           description: payload.description || null,
-          excerpt: payload.description || null, // Diisi sama seperti description
+          excerpt: payload.description || null,
           summary_social: payload.summarySocial || null,
-          category_id: categoryId, // Merekam Channel/Kategori dari frontend
+          category_id: categoryId,
           created_at: payload.createdAt || new Date().toISOString(),
-          status: "published", // Default status
+          status: "published",
         },
       ])
       .select();
