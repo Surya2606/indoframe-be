@@ -32,26 +32,31 @@ class ArticleRepository {
   }
 
   // 3. Insert artikel sesuai skema Supabase
-  async create(payload) {
+ async create(payload) {
     const generatedSlug = createSlug(payload.title);
     const categoryId = payload.channelId ? parseInt(payload.channelId, 10) : null;
+    
+    // Tangkap gambar dari berbagai kemungkinan properti payload
+    const imageSrc = payload.thumbnail || payload.imageUrl || payload.image || payload.thubnail || null;
 
-    const imageUrl = payload.thumbnail || payload.imageUrl || payload.image || null;
     const { data, error } = await supabase
       .from("articles")
       .insert([
         {
+          category_id: categoryId,
           title: payload.title,
           slug: generatedSlug,
           content: payload.content || payload.contentHtml,
-          description: payload.description || null,
-          excerpt: payload.description || null,
-          summary_social: payload.summarySocial || null,
-          category_id: categoryId,
-          created_at: payload.createdAt || new Date().toISOString(),
+          excerpt: payload.description || payload.excerpt || null,
+          thumbnail: imageSrc,
           status: "published",
-          thumbnail: imageUrl,
-          image_url: imageUrl,
+          published_at: payload.published_atAt || new Date().toISOString(),
+          created_at: payload.createdAt || new Date().toISOString(),
+          description: payload.description || null,
+          summary_social: payload.summarySocial || null,
+          topic: payload.categoryId || payload.categoryId,
+          keyword: payload.keyword || payload.keyword,
+          // 👈 Simpan ke kolom 'thumbnail' di Supabase
         },
       ])
       .select();
