@@ -18,6 +18,25 @@ class ArticleController {
       next(error);
     }
   }
+
+  // TAMBAHKAN METHOD INI UNTUK MENANGANI SUBMIT / SAVE ARTIKEL
+  async createArticle(req, res, next) {
+    try {
+      const payload = req.body;
+
+      // Memanggil method pembuat artikel di layer Service
+      // (Pastikan method ini sudah dibuat di articleService.js)
+      const newArticle = await articleService.createArticle(payload);
+
+      return res.status(201).json({
+        status: "success",
+        message: "Artikel berhasil dibuat!",
+        data: newArticle,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 module.exports = new ArticleController();

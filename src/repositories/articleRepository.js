@@ -3,12 +3,10 @@ const supabase = require("../config/supabase");
 class ArticleRepository {
   // Ambil semua artikel untuk Beranda
   async findAll() {
-    // 🟢 Meminta Supabase mengambil data artikel KALIAN beserta nama kategorinya
     const { data, error } = await supabase.from("articles").select("*, categories(name)");
 
     if (error) throw error;
 
-    // Formatting sederhana agar 'category_name' langsung tersedia
     const formattedData = data.map((item) => ({
       ...item,
       category_name: item.categories?.name || "Berita Utama",
@@ -23,6 +21,31 @@ class ArticleRepository {
 
     if (error) throw error;
     return data;
+  }
+
+  // TAMBAHKAN METHOD INI UNTUK INSERT KE SUPABASE
+  async create(payload) {
+    // Menyesuaikan payload frontend ke nama kolom di Supabase
+    const { data, error } = await supabase
+      .from("articles")
+      .insert([
+        {
+          title: payload.title,
+          content: payload.content || payload.contentHtml,
+          description: payload.description,
+          summary_social: payload.summarySocial,
+          channel_id: payload.channelId,
+          topic_id: payload.topicId,
+          keyword: payload.keyword,
+          created_at: payload.createdAt,
+          location: payload.location,
+          is_18_plus: payload.is18Plus,
+        },
+      ])
+      .select();
+
+    if (error) throw error;
+    return data[0];
   }
 }
 
