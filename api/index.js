@@ -1,2 +1,3 @@
-const app = require("../index"); // jika file Express utama kamu bernama index.js di luar
+const app = require("../src/index.js");
+
 module.exports = app;
