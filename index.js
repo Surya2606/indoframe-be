@@ -2,15 +2,15 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 
-// Routes (Ubah ./src/routes menjadi ./routes)
-const articleRoutes = require("./routes/articleRoutes");
-const categoryRoutes = require("./routes/categoryRoutes");
-const authRoutes = require("./routes/authRoutes");
-const pollingRoutes = require("./routes/pollingRoutes");
-const corsMiddleware = require("./middlewares/corsMidleware");
+// TAMBAHKAN ./src/ PADA SEMUA ROUTE & MIDDLEWARE
+const articleRoutes = require("./src/routes/articleRoutes");
+const categoryRoutes = require("./src/routes/categoryRoutes");
+const authRoutes = require("./src/routes/authRoutes");
+const pollingRoutes = require("./src/routes/pollingRoutes");
 
-// Middleware (Ubah ./src/middlewares menjadi ./middlewares)
-const errorHandler = require("./middlewares/errorHandler");
+// Middleware
+const corsMiddleware = require("./src/middlewares/corsMidleware");
+const errorHandler = require("./src/middlewares/errorHandler");
 
 const app = express();
 
@@ -31,14 +31,12 @@ app.use("/api/categories", categoryRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/polling", pollingRoutes);
 
-// Error Handler
 app.use(errorHandler);
 
-// Hanya jalankan app.listen di environment Lokal
-const PORT = process.env.PORT || 5000;
 if (process.env.NODE_ENV !== "production") {
+  const PORT = process.env.PORT || 5000;
   app.listen(PORT, () => {
-    console.log(`🚀 Industrial Backend running on http://localhost:${PORT}`);
+    console.log(`Server running on port ${PORT}`);
   });
 }
 
