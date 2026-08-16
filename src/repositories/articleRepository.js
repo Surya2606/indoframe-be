@@ -36,6 +36,7 @@ class ArticleRepository {
     const generatedSlug = createSlug(payload.title);
     const categoryId = payload.channelId ? parseInt(payload.channelId, 10) : null;
 
+    const imageUrl = payload.thumbnail || payload.imageUrl || payload.image || null;
     const { data, error } = await supabase
       .from("articles")
       .insert([
@@ -50,6 +51,7 @@ class ArticleRepository {
           created_at: payload.createdAt || new Date().toISOString(),
           status: "published",
           thumbnail: imageUrl,
+          image_url: imageUrl,
         },
       ])
       .select();
