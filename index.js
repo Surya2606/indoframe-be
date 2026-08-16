@@ -2,22 +2,22 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 
-// Routes
-const articleRoutes = require("./src/routes/articleRoutes");
-const categoryRoutes = require("./src/routes/categoryRoutes");
-const authRoutes = require("./src/routes/authRoutes");
-const pollingRoutes = require("./src/routes/pollingRoutes");
-const corsMiddleware = require("./src/middlewares/corsMidleware");
+// Routes (Ubah ./src/routes menjadi ./routes)
+const articleRoutes = require("./routes/articleRoutes");
+const categoryRoutes = require("./routes/categoryRoutes");
+const authRoutes = require("./routes/authRoutes");
+const pollingRoutes = require("./routes/pollingRoutes");
+const corsMiddleware = require("./middlewares/corsMidleware");
 
-// Middleware
-const errorHandler = require("./src/middlewares/errorHandler");
+// Middleware (Ubah ./src/middlewares menjadi ./middlewares)
+const errorHandler = require("./middlewares/errorHandler");
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-// 1. Root Route (Penting agar Vercel tidak error saat cek halaman utama)
+// Root Route
 app.get("/", (req, res) => {
   res.status(200).json({
     message: "🚀 Indoframe Backend API is running successfully on Vercel!",
@@ -31,7 +31,7 @@ app.use("/api/categories", categoryRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/polling", pollingRoutes);
 
-// Error Handler (Wajib ditaruh paling bawah!)
+// Error Handler
 app.use(errorHandler);
 
 // Hanya jalankan app.listen di environment Lokal
@@ -42,5 +42,4 @@ if (process.env.NODE_ENV !== "production") {
   });
 }
 
-// 2. WAJIB FOR VERCEL: Export app Express
 module.exports = app;
