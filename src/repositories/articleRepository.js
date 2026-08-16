@@ -1,45 +1,42 @@
 const supabase = require("../config/supabase");
 
+// Helper sederhana untuk generate Slug otomatis
+const createSlug = (title) => {
+  return (
+    title
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w\s-]/g, "") // Hapus karakter khusus
+      .replace(/[\s_-]+/g, "-") // Ganti spasi dengan strip
+      .replace(/^-+|-+$/g, "") +
+    "-" +
+    Date.now()
+  ); // Tambah timestamp agar slug selalu UNIQUE
+};
+
 class ArticleRepository {
-  // Ambil semua artikel untuk Beranda
-  async findAll() {
-    const { data, error } = await supabase.from("articles").select("*, categories(name)");
+  // ... method findAll dan searchFullText tetapkan seperti sebelumnya ...
 
-    if (error) throw error;
-
-    const formattedData = data.map((item) => ({
-      ...item,
-      category_name: item.categories?.name || "Berita Utama",
-    }));
-
-    return formattedData;
-  }
-
-  // Cari artikel menggunakan Full-Text Search (FTS) Postgres Supabase
-  async searchFullText(query) {
-    const { data, error } = await supabase.from("articles").select("*").or(`title.fts.${query},content.fts.${query}`).order("created_at", { ascending: false });
-
-    if (error) throw error;
-    return data;
-  }
-
-  // TAMBAHKAN METHOD INI UNTUK INSERT KE SUPABASE
   async create(payload) {
-    // Menyesuaikan payload frontend ke nama kolom di Supabase
+    // Generate slug otomatis dari title
+    const generatedSlug = createSlug(payload.title);
+
+    // Mencegah error NaN jika payload channel/category kosong
+    const categoryId = payload.channelId ? parseInt(payload.channelId, 10) : null;
+
     const { data, error } = await supabase
       .from("articles")
       .insert([
         {
           title: payload.title,
+          slug: generatedSlug, // WAJIB ADA (NON-NULLABLE & UNIQUE)
           content: payload.content || payload.contentHtml,
-          description: payload.description,
-          summary_social: payload.summarySocial,
-          channel_id: payload.channelId,
-          topic_id: payload.topicId,
-          keyword: payload.keyword,
-          created_at: payload.createdAt,
-          location: payload.location,
-          is_18_plus: payload.is18Plus,
+          description: payload.description || null,
+          excerpt: payload.description || null, // Diisi sama seperti description
+          summary_social: payload.summarySocial || null,
+          category_id: categoryId, // Merekam Channel/Kategori dari frontend
+          created_at: payload.createdAt || new Date().toISOString(),
+          status: "published", // Default status
         },
       ])
       .select();
