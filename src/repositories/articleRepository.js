@@ -50,7 +50,6 @@ class ArticleRepository {
           created_at: payload.createdAt || new Date().toISOString(),
           status: "published",
           thumbnail: imageUrl,
-          image_url: imageUrl,
         },
       ])
       .select();
