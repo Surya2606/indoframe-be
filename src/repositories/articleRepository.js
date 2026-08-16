@@ -55,8 +55,7 @@ class ArticleRepository {
           description: payload.description || null,
           summary_social: payload.summarySocial || null,
           topic: payload.categoryId || payload.categoryId,
-          keyword: payload.keyword || payload.keyword,
-          // 👈 Simpan ke kolom 'thumbnail' di Supabase
+           // 👈 Simpan ke kolom 'thumbnail' di Supabase
         },
       ])
       .select();
