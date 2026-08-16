@@ -2,14 +2,13 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 
-// TAMBAHKAN ./src/ PADA SEMUA ROUTE & MIDDLEWARE
+// Routes (Wajib pakai ./src/ karena index.js ada di luar folder src)
 const articleRoutes = require("./src/routes/articleRoutes");
 const categoryRoutes = require("./src/routes/categoryRoutes");
 const authRoutes = require("./src/routes/authRoutes");
 const pollingRoutes = require("./src/routes/pollingRoutes");
 
 // Middleware
-const corsMiddleware = require("./src/middlewares/corsMidleware");
 const errorHandler = require("./src/middlewares/errorHandler");
 
 const app = express();
@@ -31,13 +30,16 @@ app.use("/api/categories", categoryRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/polling", pollingRoutes);
 
+// Error Handler
 app.use(errorHandler);
 
+// Jalankan server di lokal
+const PORT = process.env.PORT || 5000;
 if (process.env.NODE_ENV !== "production") {
-  const PORT = process.env.PORT || 5000;
   app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log(`🚀 Industrial Backend running on http://localhost:${PORT}`);
   });
 }
 
+// Export app untuk Vercel
 module.exports = app;
