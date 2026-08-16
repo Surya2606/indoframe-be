@@ -35,7 +35,8 @@ app.use(errorHandler);
 
 // Jalankan server di lokal
 const PORT = process.env.PORT || 5000;
-if (process.env.NODE_ENV !== "production") {
+// Jalankan server hanya saat di lokal (bukan di Vercel)
+if (process.env.NODE_ENV !== "production" && !process.env.VERCEL) {
   app.listen(PORT, () => {
     console.log(`🚀 Industrial Backend running on http://localhost:${PORT}`);
   });
