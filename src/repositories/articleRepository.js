@@ -15,7 +15,15 @@ const createSlug = (title) => {
 };
 
 class ArticleRepository {
-  // ... method findAll dan searchFullText tetapkan seperti sebelumnya ...
+  // Ambil semua artikel untuk Beranda / Header
+  async findAll() {
+    // Ambil data artikel tanpa join otomatis yang berpotensi error 500
+    const { data, error } = await supabase.from("articles").select("*").order("created_at", { ascending: false });
+
+    if (error) throw error;
+
+    return data;
+  } // ... method findAll dan searchFullText tetapkan seperti sebelumnya ...
 
   async create(payload) {
     // Generate slug otomatis dari title
